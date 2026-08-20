@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<title>Car Traffic Puzzle - Telegram Game</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	
+	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
+	<meta name="generator" content="Scirra Construct">
+
+	<!-- Telegram WebApp SDK -->
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+	<link rel="manifest" href="appmanifest.json">
+	<link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+	<link rel="apple-touch-icon" sizes="256x256" href="icons/icon-256.png">
+	<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+	<link rel="icon" type="image/png" href="icons/icon-512.png">
+
+	<link rel="stylesheet" href="style.css">
+
+	<style>
+		/* Telegram optimizations */
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: var(--tg-color-bg, #000);
+		}
+		canvas {
+			display: block;
+			width: 100%;
+			height: 100vh;
+		}
+	</style>
+
+</head> 
+ 
+<body>
+
+	
+
+<script>
+// Initialiser Telegram WebApp
+if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
+	const tg = window.Telegram.WebApp;
+	tg.ready();
+	tg.expand();
+	
+	// Récupérer les infos utilisateur
+	const user = tg.initDataUnsafe?.user;
+	if (user) {
+		console.log('✅ Telegram User:', user.id, user.first_name);
+		window.telegramUser = user;
+	}
+	
+	// Activer le bouton de fermeture
+	tg.enableClosingConfirmation();
+}
+
+// Vérification de développement
+if (location.protocol.substr(0, 4) === "file")
+{
+	alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
+}
+</script>
+	
+	<noscript>
+		<div id="notSupportedWrap">
+			<h2 id="notSupportedTitle">This content requires JavaScript</h2>
+			<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
+		</div>
+	</noscript>
+	<script src="scripts/modernjscheck.js"></script>
+	<script src="scripts/supportcheck.js"></script>
+	<script src="scripts/offlineclient.js" type="module"></script>
+	<script src="scripts/main.js" type="module"></script>
+
+	<!-- Telegram Game Integration -->
+	<script>
+		// Save player score to localStorage
+		window.saveGameScore = function(levelNumber, score) {
+			try {
+				const gameData = {
+					lastLevel: levelNumber,
+					lastScore: score,
+					timestamp: new Date().toISOString()
+				};
+				
+				// Sauvegarder localement
+				localStorage.setItem('carTrafficGameData', JSON.stringify(gameData));
+				
+				// Si Telegram est disponible
+				if (window.telegramUser) {
+					console.log('📊 Score saved:', score, 'Level:', levelNumber);
+				}
+			} catch (e) {
+				console.error('Error saving score:', e);
+			}
+		};
+		
+		// Load saved game data
+		window.loadGameScore = function() {
+			try {
+				const data = localStorage.getItem('carTrafficGameData');
+				return data ? JSON.parse(data) : null;
+			} catch (e) {
+				return null;
+			}
+		};
+		
+		// Show Telegram alert (if available)
+		window.showTelegramAlert = function(message) {
+			if (window.Telegram?.WebApp) {
+				window.Telegram.WebApp.showAlert(message);
+			} else {
+				alert(message);
+			}
+		};
+	</script>
+
+</body> 
+</html>

@@ -1,0 +1,23 @@
+{
+  "buildCommand": "echo 'Build complete'",
+  "installCommand": "npm install",
+  "outputDirectory": ".",
+  "regions": ["cdg1"],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    }
+  ]
+}

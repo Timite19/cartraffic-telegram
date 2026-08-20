@@ -1,0 +1,14 @@
+{
+  "name": "car-traffic-puzzle-telegram",
+  "version": "1.0.0",
+  "description": "Car Traffic Puzzle - Telegram Mini Game",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 3000",
+    "build": "echo 'Static files ready'",
+    "start": "node server.js"
+  },
+  "keywords": ["telegram", "game", "car-puzzle"],
+  "author": "Timite",
+  "license": "MIT"
+}
