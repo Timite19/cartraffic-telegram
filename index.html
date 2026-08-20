@@ -2,121 +2,94 @@
 <html>
 <head>
     <meta charset="UTF-8">
-	<title>Car Traffic Puzzle - Telegram Game</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-	
-	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
-	<meta name="generator" content="Scirra Construct">
-
-	<!-- Telegram WebApp SDK -->
-	<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-	<link rel="manifest" href="appmanifest.json">
-	<link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
-	<link rel="apple-touch-icon" sizes="256x256" href="icons/icon-256.png">
-	<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
-	<link rel="icon" type="image/png" href="icons/icon-512.png">
-
-	<link rel="stylesheet" href="style.css">
-
-	<style>
-		/* Telegram optimizations */
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: var(--tg-color-bg, #000);
-		}
-		canvas {
-			display: block;
-			width: 100%;
-			height: 100vh;
-		}
-	</style>
-
-</head> 
- 
+    <title>Car Traffic Puzzle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="generator" content="Scirra Construct">
+    <link rel="manifest" href="appmanifest.json">
+    <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+    <link rel="apple-touch-icon" sizes="256x256" href="icons/icon-256.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+    <link rel="icon" type="image/png" href="icons/icon-512.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background-color: var(--tg-color-bg, #000); color: var(--tg-color-text, #fff); }
+    </style>
+</head>
 <body>
-
-	
-
-<script>
-// Initialiser Telegram WebApp
-if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
-	const tg = window.Telegram.WebApp;
-	tg.ready();
-	tg.expand();
-	
-	// Récupérer les infos utilisateur
-	const user = tg.initDataUnsafe?.user;
-	if (user) {
-		console.log('✅ Telegram User:', user.id, user.first_name);
-		window.telegramUser = user;
-	}
-	
-	// Activer le bouton de fermeture
-	tg.enableClosingConfirmation();
-}
-
-// Vérification de développement
-if (location.protocol.substr(0, 4) === "file")
-{
-	alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
-}
-</script>
-	
-	<noscript>
-		<div id="notSupportedWrap">
-			<h2 id="notSupportedTitle">This content requires JavaScript</h2>
-			<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
-		</div>
-	</noscript>
-	<script src="scripts/modernjscheck.js"></script>
-	<script src="scripts/supportcheck.js"></script>
-	<script src="scripts/offlineclient.js" type="module"></script>
-	<script src="scripts/main.js" type="module"></script>
-
-	<!-- Telegram Game Integration -->
-	<script>
-		// Save player score to localStorage
-		window.saveGameScore = function(levelNumber, score) {
-			try {
-				const gameData = {
-					lastLevel: levelNumber,
-					lastScore: score,
-					timestamp: new Date().toISOString()
-				};
-				
-				// Sauvegarder localement
-				localStorage.setItem('carTrafficGameData', JSON.stringify(gameData));
-				
-				// Si Telegram est disponible
-				if (window.telegramUser) {
-					console.log('📊 Score saved:', score, 'Level:', levelNumber);
-				}
-			} catch (e) {
-				console.error('Error saving score:', e);
-			}
-		};
-		
-		// Load saved game data
-		window.loadGameScore = function() {
-			try {
-				const data = localStorage.getItem('carTrafficGameData');
-				return data ? JSON.parse(data) : null;
-			} catch (e) {
-				return null;
-			}
-		};
-		
-		// Show Telegram alert (if available)
-		window.showTelegramAlert = function(message) {
-			if (window.Telegram?.WebApp) {
-				window.Telegram.WebApp.showAlert(message);
-			} else {
-				alert(message);
-			}
-		};
-	</script>
-
-</body> 
+    <!-- SDK Telegram -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- AdSense (pour sites non-Telegram) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6454087203254796" crossorigin="anonymous"></script>
+    
+    <script>
+        // Initialiser Telegram si disponible
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            tg.enableClosingConfirmation();
+            window.isTelegram = true;
+            window.telegramUser = tg.initDataUnsafe?.user;
+        } else {
+            window.isTelegram = false;
+        }
+        
+        // Charger Telegram Ads si dans Telegram
+        if (window.isTelegram) {
+            const script = document.createElement('script');
+            script.src = 'https://telegram.org/js/telegram-web-app.js';
+            document.head.appendChild(script);
+        }
+        
+        // Fonctions de sauvegarde scores
+        window.saveGameScore = function(score) {
+            if (window.isTelegram) {
+                localStorage.setItem('telegramScore', JSON.stringify({
+                    score: score,
+                    user: window.telegramUser?.id,
+                    timestamp: new Date().toISOString()
+                }));
+            } else {
+                localStorage.setItem('gameScore', score);
+            }
+        };
+        
+        window.loadGameScore = function() {
+            if (window.isTelegram) {
+                const data = localStorage.getItem('telegramScore');
+                return data ? JSON.parse(data).score : 0;
+            } else {
+                return parseInt(localStorage.getItem('gameScore') || '0');
+            }
+        };
+        
+        // Alerte Telegram
+        window.showTelegramAlert = function(message) {
+            if (window.isTelegram && window.Telegram?.WebApp) {
+                window.Telegram.WebApp.showAlert(message);
+            } else {
+                alert(message);
+            }
+        };
+    </script>
+    
+    <script>
+        if (location.protocol.substr(0, 4) === "file") {
+            alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
+        }
+    </script>
+    
+    <noscript>
+        <div id="notSupportedWrap">
+            <h2 id="notSupportedTitle">This content requires JavaScript</h2>
+            <p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
+        </div>
+    </noscript>
+    
+    <script src="scripts/modernjscheck.js"></script>
+    <script src="scripts/supportcheck.js"></script>
+    <script src="scripts/offlineclient.js" type="module"></script>
+    <script src="scripts/main.js" type="module"></script>
+</body>
 </html>
